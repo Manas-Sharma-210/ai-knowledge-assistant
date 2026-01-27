@@ -1,15 +1,35 @@
 from pypdf import PdfReader
 from pathlib import Path
-import pytesseract
-from pdf2image import convert_from_path
-from PIL import Image
 import os
 
-# CORRECT POPPLER PATH (FOUND VIA where.exe)
+# ============================================================
+# OPTIONAL OCR IMPORTS (SAFE FOR CLOUD DEPLOYMENT)
+# ============================================================
+try:
+    import pytesseract
+except ImportError:
+    pytesseract = None  # OCR disabled in environments without tesseract
+
+try:
+    from pdf2image import convert_from_path
+except ImportError:
+    convert_from_path = None
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
+
+# ============================================================
+# POPPLER PATH (WINDOWS ONLY)
+# ============================================================
 POPPLER_PATH = r"C:\poppler\poppler-25.12.0\Library\bin"
 
-# Inject into PATH so subprocess can find pdfinfo.exe
-os.environ["PATH"] += os.pathsep + POPPLER_PATH
+# Inject poppler path ONLY if it exists (prevents cloud crash)
+if os.path.exists(POPPLER_PATH):
+    os.environ["PATH"] += os.pathsep + POPPLER_PATH
+
 
 def extract_text(file_path: str) -> str:
     """
@@ -23,10 +43,14 @@ def extract_text(file_path: str) -> str:
     if ext == ".pdf":
         text = _extract_pdf(file_path)
 
-        #  OCR FALLBACK (scanned PDFs)
+        # OCR FALLBACK (scanned PDFs)
         if len(text.strip()) < 500:
-            print("[INFO] Low text detected, switching to OCR...")
-            text = _extract_pdf_with_ocr(file_path)
+            print("[INFO] Low text detected.")
+            if pytesseract and convert_from_path:
+                print("[INFO] OCR available, switching to OCR...")
+                text = _extract_pdf_with_ocr(file_path)
+            else:
+                print("[WARN] OCR not available in this environment. Skipping OCR.")
 
     elif ext == ".txt":
         text = _extract_txt(file_path)
@@ -37,7 +61,9 @@ def extract_text(file_path: str) -> str:
     if not text.strip():
         raise ValueError("No extractable text found in document.")
 
-    #  Academic signal boosting (UNCHANGED)
+    # ============================================================
+    # Academic signal boosting (UNCHANGED)
+    # ============================================================
     important_lines = []
     for line in text.split("\n"):
         l = line.lower()
@@ -80,13 +106,17 @@ def _extract_pdf_with_ocr(file_path: str) -> str:
     Converts PDF pages to images and extracts text using Tesseract.
     """
 
-    pages = convert_from_path(
-    file_path,
-    dpi=300,
-    poppler_path=POPPLER_PATH,
-    use_pdftocairo=False
-)
+    # HARD SAFETY CHECK
+    if not (pytesseract and convert_from_path):
+        print("[WARN] OCR dependencies missing. Returning empty text.")
+        return ""
 
+    pages = convert_from_path(
+        file_path,
+        dpi=300,
+        poppler_path=POPPLER_PATH if os.path.exists(POPPLER_PATH) else None,
+        use_pdftocairo=False
+    )
 
     text = ""
 
@@ -116,11 +146,9 @@ def clean_text(text: str) -> str:
     Keeps content intact, only removes noise.
     """
 
-    # Remove excessive newlines
     while "\n\n" in text:
         text = text.replace("\n\n", "\n")
 
-    # Remove extra spaces
     while "  " in text:
         text = text.replace("  ", " ")
 
