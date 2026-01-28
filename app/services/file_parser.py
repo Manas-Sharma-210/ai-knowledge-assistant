@@ -2,6 +2,10 @@ from pypdf import PdfReader
 from pathlib import Path
 import os
 
+
+ENABLE_OCR = os.getenv("ENABLE_OCR", "false").lower() == "true"
+
+
 # ============================================================
 # OPTIONAL OCR IMPORTS (SAFE FOR CLOUD DEPLOYMENT)
 # ============================================================
@@ -44,11 +48,23 @@ def extract_text(file_path: str) -> str:
         text = _extract_pdf(file_path)
 
         # OCR FALLBACK (scanned PDFs)
+    def extract_text(file_path: str) -> str:
+     ext = Path(file_path).suffix.lower()
+
+    if ext == ".pdf":
+        text = _extract_pdf(file_path)
+
+        # OCR fallback for scanned PDFs
         if len(text.strip()) < 500:
             print("[INFO] Low text detected.")
-            if pytesseract and convert_from_path:
+
+            if not ENABLE_OCR:
+                print("[INFO] OCR disabled via ENABLE_OCR env variable. Skipping OCR.")
+
+            elif pytesseract and convert_from_path:
                 print("[INFO] OCR available, switching to OCR...")
                 text = _extract_pdf_with_ocr(file_path)
+
             else:
                 print("[WARN] OCR not available in this environment. Skipping OCR.")
 
@@ -60,6 +76,9 @@ def extract_text(file_path: str) -> str:
 
     if not text.strip():
         raise ValueError("No extractable text found in document.")
+
+    return text
+
 
     # ============================================================
     # Academic signal boosting (UNCHANGED)
