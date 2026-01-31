@@ -83,7 +83,7 @@ ai-knowledge-assistant/
 │       ├── vector_store.py
 │       └── llm.py
 │
-├── streamlit_app/        # Optional frontend
+├── streamlit_app/        
 │
 ├── requirements.txt
 ├── .gitignore
