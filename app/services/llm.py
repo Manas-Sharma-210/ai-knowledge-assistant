@@ -3,13 +3,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+print("DEBUG GROQ_API_KEY =", os.getenv("GROQ_API_KEY"))
 
 class LLM:
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
         # ==========================================================
-        # 🔥 MASTER SYSTEM PROMPT (CORE INTELLIGENCE LAYER)
+        # MASTER SYSTEM PROMPT (CORE INTELLIGENCE LAYER)
         # This defines HOW the AI behaves for ALL PDFs & questions
         # ==========================================================
         self.system_prompt = """
