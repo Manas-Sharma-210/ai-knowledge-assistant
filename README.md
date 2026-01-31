@@ -1,16 +1,3 @@
-Perfect. This is the **right move** now.
-We’ll write a README that:
-
-* Lets **anyone run it locally** (like Anmol’s project)
-* Shows **you actually built something non-trivial**
-* Avoids deployment pain for now
-* Looks **clean, confident, and portfolio-ready**
-
-Below is a **complete README.md** you can paste as-is.
-(I’ve written it so recruiters, classmates, and seniors all get impressed without confusion.)
-
----
-
 # 📚 AI Knowledge Assistant
 
 An AI-powered backend system that allows users to **upload documents (PDF/TXT)** and ask **intelligent, context-aware questions** about their content.
@@ -148,9 +135,7 @@ Create a `.env` file in the project root:
 GROQ_API_KEY=your_groq_api_key_here
 ```
 
-> ⚠️ `.env` is gitignored — your key will **not** be exposed.
 
----
 
 ### 5️⃣ (Optional) OCR Setup (Windows)
 
