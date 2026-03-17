@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-print("DEBUG GROQ_API_KEY =", os.getenv("GROQ_API_KEY"))
+
 
 class LLM:
     def __init__(self):
