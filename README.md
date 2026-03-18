@@ -1,3 +1,14 @@
+---
+title: Ai Knowledge Assistant
+emoji: 🧠
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
+
+
 # 📚 AI Knowledge Assistant
 
 An AI-powered backend system that allows users to **upload documents (PDF/TXT)** and ask **intelligent, context-aware questions** about their content.
