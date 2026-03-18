@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import time
 
-BACKEND_URL = "http://127.0.0.1:8000"
+BACKEND_URL = "https://manas1024-ai-knowledge-assistant.hf.space"
 
 # =========================
 # PAGE CONFIG
